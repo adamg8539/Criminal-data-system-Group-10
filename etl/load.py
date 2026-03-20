@@ -2,7 +2,9 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine, text
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def get_db_engine():
     db_user = os.getenv("DB_USER", "postgres")
