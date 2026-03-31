@@ -24,6 +24,8 @@ def extract_data(file_path: Path = RAW_FILE) -> pd.DataFrame:
     print(f"[etl.extract] cwd: {Path.cwd()}")
     print(f"[etl.extract] attempting to read: {file_path} -> resolved: {file_path.resolve()}")
 
+    return df
+
     candidates_tried = []
 
     def list_candidates(directory: Path):
