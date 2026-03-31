@@ -7,12 +7,20 @@ RAW_FILE = Path("data/raw/RCI_offencebymonth.xlsm")
 
 
 def extract_data(file_path: Path = RAW_FILE) -> pd.DataFrame:
-    """Read the raw Excel dataset.
+    """ Read the raw Excel dataset."""
 
-    This function includes basic logging and will raise exceptions it cannot
-    handle. Use the module entrypoint to see helpful debug output.
-    """
     file_path = Path(file_path)
+
+    if not file_path.exists() or file_path.stat().st_size == 0:
+        raise FileNotFoundError(
+            f"No readable raw data files found in {file_path.parent}"
+        )
+
+    if file_path.suffix.lower() == ".csv":
+        df = pd.read_csv(file_path)
+    else:
+        df = pd.read_excel(file_path)
+        
     print(f"[etl.extract] cwd: {Path.cwd()}")
     print(f"[etl.extract] attempting to read: {file_path} -> resolved: {file_path.resolve()}")
 
