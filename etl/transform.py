@@ -191,12 +191,15 @@ def transform_data(df: pd.DataFrame) -> pd.DataFrame:
         value_name="incident_count",
     )
 
-    date_as_text = df_long["date"].astype(str).str.strip()
-    df_long["date"] = pd.to_datetime(date_as_text, format="%b %Y", errors="coerce")
-    missing_dates = df_long["date"].isna()
-    df_long.loc[missing_dates, "date"] = pd.to_datetime(
-        date_as_text[missing_dates], format="%b-%y", errors="coerce"
-    )
+    # Columns from Excel are already datetime objects; fall back to string parsing
+    df_long["date"] = pd.to_datetime(df_long["date"], errors="coerce")
+    if df_long["date"].isna().all():
+        date_as_text = df_long["date"].astype(str).str.strip()
+        df_long["date"] = pd.to_datetime(date_as_text, format="%b %Y", errors="coerce")
+        missing = df_long["date"].isna()
+        df_long.loc[missing, "date"] = pd.to_datetime(
+            date_as_text[missing], format="%b-%y", errors="coerce"
+        )
     df_long = df_long.dropna(subset=["date", "incident_count"])
 
     df_long = df_long.rename(
