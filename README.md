@@ -33,6 +33,14 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
+Create the permanent tables in the PostgreSQL database configured in `.env`:
+
+```powershell
+python scripts\setup_db.py
+```
+
+This is a one-time initialization step. It does not drop existing tables.
+
 ## Dashboard
 
 After producing `data/processed/crime_long_format.csv`, run:
