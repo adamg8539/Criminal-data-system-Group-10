@@ -4,9 +4,7 @@ from etl.transform import transform_data
 from etl.validate import validate_data
 from etl.load import (
     get_db_engine,
-    filter_new_records,
-    load_staging_data,
-    populate_dimensions_and_fact,
+    load_data_atomic,
     log_load_history,
 )
 
@@ -34,26 +32,8 @@ def run_pipeline():
         rows_validated = validation_report["rows_passed"]
         print(f"[pipeline] Validation passed {rows_validated} rows.")
 
-        # Incremental filter (CRDS-24)
-        incremental_df, incremental_from = filter_new_records(validated_df, engine)
-        rows_loaded = len(incremental_df)
-
-        if rows_loaded == 0:
-            print("[pipeline] No new records to load. Pipeline complete.")
-            log_load_history(
-                engine,
-                rows_extracted=rows_extracted,
-                rows_after_validation=rows_validated,
-                rows_transformed=rows_transformed,
-                rows_loaded=0,
-                incremental_from=incremental_from,
-                status="success",
-            )
-            return
-
-        # Load (CRDS-26: idempotent via ON CONFLICT)
-        load_staging_data(incremental_df, engine)
-        populate_dimensions_and_fact(engine)
+        # Load the complete snapshot so corrected historical counts are updated.
+        rows_loaded = load_data_atomic(validated_df, engine)
 
         # Record history (CRDS-23)
         log_load_history(
