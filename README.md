@@ -43,8 +43,10 @@ This is a one-time initialization step. It does not drop existing tables.
 
 ## Dashboard
 
-After producing `data/processed/crime_long_format.csv`, run:
+After configuring `.env`, creating the database schema, and loading the data, run:
 
 ```powershell
 python -m streamlit run app\app.py
 ```
+
+The dashboard reads its data from the configured PostgreSQL database.
